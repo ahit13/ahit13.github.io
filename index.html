@@ -1,0 +1,72 @@
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+</style>
+</head>
+<body>
+
+
+Ваш IP-адрес:
+<h4><div id="ipAddress">Загрузка...</div></h4> 
+
+User-Agent:
+<h4><div id="userAgent"></div></h4> 
+
+
+<br>
+<br>
+
+    <h4>architecture, bitness, model, platformVersion, uaFullVersion, fullVersionList</h4>
+    <div id="output"></div>
+    
+    <table id="outputTable"></table>
+    
+    <script>
+        // Вывод IP-адреса
+        fetch('https://api64.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ipAddress').textContent = data.ip;
+            })
+            .catch(error => {
+                document.getElementById('ipAddress').textContent = 'Ошибка получения IP';
+            });
+
+        // Вывод User-Agent
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        
+        // Получение данных userAgentData
+        if (navigator.userAgentData) {
+            let fields = ["architecture", "bitness", "model", "platformVersion", "uaFullVersion", "fullVersionList"];
+            
+            navigator.userAgentData.getHighEntropyValues(fields).then(values => {
+                document.getElementById('output').textContent = JSON.stringify(values, null, 2);
+                
+                let table = document.getElementById('outputTable');
+                
+                Object.entries(values).forEach(([key, value]) => {
+                    let row = table.insertRow();
+                    let cell1 = row.insertCell(0);
+                    let cell2 = row.insertCell(1);
+                    cell1.textContent = key;
+                    cell2.textContent = Array.isArray(value) ? JSON.stringify(value) : value;
+                });
+            });
+        }
+    </script>
+</body>
+</html>
